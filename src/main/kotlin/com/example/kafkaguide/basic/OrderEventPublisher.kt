@@ -17,7 +17,7 @@ class OrderEventPublisher(
         try {
             // hash(key) % 토픽의 파티션 수
             kafkaTemplate.send(ordersTopic, orderEvent.orderId, orderEvent)
-                .whenComplete {_, ex->
+                .whenComplete { _, ex ->
                     if (ex != null) {
                         logger.error("Error when publishing order event", ex)
                     } else {

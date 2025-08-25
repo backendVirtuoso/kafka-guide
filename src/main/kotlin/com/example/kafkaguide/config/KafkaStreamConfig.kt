@@ -11,7 +11,7 @@ import org.springframework.kafka.config.KafkaStreamsConfiguration
 class KafkaStreamConfig(private val kafkaProperties: KafkaProperties) {
 
     @Bean("defaultKafkaStreamsConfig")
-    fun defaultKafkaStreamsConfig() : KafkaStreamsConfiguration {
+    fun defaultKafkaStreamsConfig(): KafkaStreamsConfiguration {
         val props = kafkaProperties.streams.buildProperties(null)
 
         props[StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG] = Serdes.String()::class.java

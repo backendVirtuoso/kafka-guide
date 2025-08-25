@@ -28,7 +28,7 @@ class OrderEventConsumer {
             processLogic()
 
             logger.info("Received order event: {}", orderEvent)
-        } catch (ex : Exception)  {
+        } catch (ex: Exception) {
             logger.error(ex.message, ex)
         }
     }
@@ -53,15 +53,19 @@ class OrderAnalyticsConsumer {
         @Payload orderEvent: OrderEvent,
         @Header(KafkaHeaders.RECEIVED_PARTITION) partition: Int
     ) {
-        logger.info("Collecting analytics for order {} from partition {}",
-            orderEvent.orderId, partition)
+        logger.info(
+            "Collecting analytics for order {} from partition {}",
+            orderEvent.orderId, partition
+        )
 
         try {
             updateCustomerStatistics(orderEvent)
 
         } catch (ex: Exception) {
-            logger.error("Failed to collect analytics for order {}: {}",
-                orderEvent.orderId, ex.message)
+            logger.error(
+                "Failed to collect analytics for order {}: {}",
+                orderEvent.orderId, ex.message
+            )
         }
     }
 
@@ -84,8 +88,10 @@ class OrderNotificationConsumer {
         @Payload orderEvent: OrderEvent,
         @Header(KafkaHeaders.RECEIVED_PARTITION) partition: Int
     ) {
-        logger.info("Sending notifications for order {} from partition {}",
-            orderEvent.orderId, partition)
+        logger.info(
+            "Sending notifications for order {} from partition {}",
+            orderEvent.orderId, partition
+        )
 
         try {
             if (isHighValueOrder(orderEvent)) {
@@ -93,8 +99,10 @@ class OrderNotificationConsumer {
             }
 
         } catch (ex: Exception) {
-            logger.error("Failed to send notifications for order {}: {}",
-                orderEvent.orderId, ex.message)
+            logger.error(
+                "Failed to send notifications for order {}: {}",
+                orderEvent.orderId, ex.message
+            )
         }
     }
 

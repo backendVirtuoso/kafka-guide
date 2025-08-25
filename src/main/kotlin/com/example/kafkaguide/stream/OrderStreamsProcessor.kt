@@ -28,19 +28,22 @@ class OrderStreamsProcessor(
     private val windowedOrderCountSerde = createJsonSerde<WindowedOrderCount>()
     private val windowedSalesDataSerde = createJsonSerde<WindowedSalesData>()
 
-    private inline fun <reified T> createJsonSerde() : JsonSerde<T> {
+    private inline fun <reified T> createJsonSerde(): JsonSerde<T> {
         return JsonSerde<T>().apply {
-            configure(mapOf(
-                "spring.json.trusted.packages" to "org.kafka_lecture.model",
-                "spring.json.add.type.headers" to false,
-                "spring.json.value.default.type" to T::class.java.name
-            ), false)
+            configure(
+                mapOf(
+                    "spring.json.trusted.packages" to "org.kafka_lecture.model",
+                    "spring.json.add.type.headers" to false,
+                    "spring.json.value.default.type" to T::class.java.name
+                ), false
+            )
         }
     }
 
     @Bean
-    fun orderProcessingTopology(builder : StreamsBuilder) : Topology {
-        val orderStream : KStream<String, OrderEvent> = builder.stream(ordersTopic, Consumed.with(Serdes.String(), orderEventSerde))
+    fun orderProcessingTopology(builder: StreamsBuilder): Topology {
+        val orderStream: KStream<String, OrderEvent> =
+            builder.stream(ordersTopic, Consumed.with(Serdes.String(), orderEventSerde))
 
         highValueStream(orderStream)
         fraudStream(orderStream)
@@ -50,7 +53,7 @@ class OrderStreamsProcessor(
         return builder.build()
     }
 
-    private fun highValueStream(orderStream : KStream<String, OrderEvent>) {
+    private fun highValueStream(orderStream: KStream<String, OrderEvent>) {
         val highValueStream = orderStream.filter { _, orderEvent ->
             logger.info("Filtering high Value Stream order: {}", orderEvent.orderId)
             orderEvent.price >= BigDecimal("1000")
@@ -59,7 +62,7 @@ class OrderStreamsProcessor(
         highValueStream.to(highValueOrdersTopic, Produced.with(Serdes.String(), orderEventSerde))
     }
 
-    private fun fraudStream(orderStream : KStream<String, OrderEvent>) {
+    private fun fraudStream(orderStream: KStream<String, OrderEvent>) {
         val fraudStream = orderStream.filter { _, orderEvent ->
             orderEvent.price >= BigDecimal("5000") ||
                     orderEvent.quantity > 100 ||

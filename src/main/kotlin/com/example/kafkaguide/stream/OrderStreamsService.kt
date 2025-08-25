@@ -16,18 +16,18 @@ import java.time.ZoneOffset
 
 @Service
 class OrderStreamsService(
-    private val factory : StreamsBuilderFactoryBean
+    private val factory: StreamsBuilderFactoryBean
 ) {
     private val logger = LoggerFactory.getLogger(OrderStreamsService::class.java)
 
-    fun orderCountComparison() : OrderCountComparisonStats? {
+    fun orderCountComparison(): OrderCountComparisonStats? {
         return try {
             val stream = factory.kafkaStreams
-            if (stream == null ||  stream.state() != KafkaStreams.State.RUNNING) {
+            if (stream == null || stream.state() != KafkaStreams.State.RUNNING) {
                 return null
             }
 
-            val store : ReadOnlyWindowStore<String, WindowedOrderCount> = stream.store(
+            val store: ReadOnlyWindowStore<String, WindowedOrderCount> = stream.store(
                 StoreQueryParameters.fromNameAndType("order-count-store", QueryableStoreTypes.windowStore())
             )
 
@@ -72,18 +72,18 @@ class OrderStreamsService(
                 changePercentage = changePercentage,
                 isIncreasing = changeCount > 0
             )
-        } catch (e : Exception) {
+        } catch (e: Exception) {
             logger.error("Failed to get streams info", e.message)
             return null
         }
     }
 
     private fun countForPeriod(
-        store : ReadOnlyWindowStore<String, WindowedOrderCount>,
-        startTime : Instant,
-        endTime : Instant
-    ) : Long {
-        var totalCount =0L
+        store: ReadOnlyWindowStore<String, WindowedOrderCount>,
+        startTime: Instant,
+        endTime: Instant
+    ): Long {
+        var totalCount = 0L
 
         store.fetchAll(startTime, endTime).use { iter ->
             while (iter.hasNext()) {
