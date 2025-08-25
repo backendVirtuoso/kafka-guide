@@ -1,7 +1,6 @@
 package com.example.kafkaguide.config
 
 import com.example.kafkaguide.model.OrderEvent
-import com.fasterxml.jackson.databind.deser.std.StringDeserializer
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig
 import io.confluent.kafka.serializers.KafkaAvroDeserializer
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig
@@ -9,6 +8,7 @@ import io.confluent.kafka.serializers.KafkaAvroSerializer
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
+import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
