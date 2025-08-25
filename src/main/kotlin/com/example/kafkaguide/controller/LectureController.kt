@@ -2,6 +2,7 @@ package com.example.kafkaguide.controller
 
 import com.example.kafkaguide.avro.AvroOrderEventProducer
 import com.example.kafkaguide.basic.OrderEventPublisher
+import com.example.kafkaguide.cdc.OrderCdcService
 import com.example.kafkaguide.model.CreateOrderRequest
 import com.example.kafkaguide.model.OrderEvent
 import org.springframework.http.ResponseEntity
@@ -13,7 +14,8 @@ import java.util.UUID
 @RequestMapping("/api/lecture")
 class LectureController(
     private val orderEventPublisher: OrderEventPublisher,
-    private val avroEventPublisher: AvroOrderEventProducer
+    private val avroEventPublisher: AvroOrderEventProducer,
+    private val cdcService: OrderCdcService,
 ) {
     @PostMapping
     fun createOrder(@RequestBody request: CreateOrderRequest): ResponseEntity<String> {
@@ -50,5 +52,19 @@ class LectureController(
             "orderId" to orderId,
             "message" to "Avro order event published successfully"
         )
+    }
+
+    @PostMapping("/cdc/create")
+    fun createOrderForCdc(@RequestBody request: CreateOrderRequest): ResponseEntity<String> {
+        val orderId = UUID.randomUUID().toString()
+
+        val savedOrder = cdcService.createOrder(
+            orderId = orderId,
+            customerId = request.customerId,
+            quantity = request.quantity,
+            price = request.price
+        )
+
+        return ResponseEntity.ok("Order created in DB (CDC will trigger): ${savedOrder.orderId}")
     }
 }
